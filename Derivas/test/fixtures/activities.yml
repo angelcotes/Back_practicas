@@ -1,0 +1,21 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  name_activity: MyString
+  range: 1
+  latitude: 9.99
+  longitude: 9.99
+  start_date: 2016-09-19 05:36:41
+  finish_date: 2016-09-19 05:36:41
+  duration: 1
+  course_id: 
+
+two:
+  name_activity: MyString
+  range: 1
+  latitude: 9.99
+  longitude: 9.99
+  start_date: 2016-09-19 05:36:41
+  finish_date: 2016-09-19 05:36:41
+  duration: 1
+  course_id: 
