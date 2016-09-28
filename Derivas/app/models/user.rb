@@ -4,7 +4,7 @@ class User < ActiveRecord::Base
           :recoverable, :validatable
   include DeviseTokenAuth::Concerns::User
 
-  validates :first_name, :last_name, :email, :password, presence: true
+  validates :first_name, :last_name, presence: true
 
   # Relationship
   has_many :courses

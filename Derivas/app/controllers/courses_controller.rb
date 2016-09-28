@@ -3,7 +3,7 @@ class CoursesController < ApplicationController
   before_action :set_course, only: [:show, :destroy, :update]
 
   def create
-    course = Course.new(course_params)
+    course = current_user.course.new(course_params)
     if course.save
       render json: course, status: 201  
     else
@@ -12,7 +12,7 @@ class CoursesController < ApplicationController
   end
 
   def index
-    render json: Course.all
+    render json: current_user.courses
   end
 
   def show
@@ -34,7 +34,7 @@ class CoursesController < ApplicationController
 
   private
     def set_course
-      @course = Course.where(id: params[:id]).first
+      @course = current_user.courses.where(id: params[:id]).first
       return head(:not_found) if not @course 
     end
 

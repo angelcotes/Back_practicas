@@ -1,9 +1,11 @@
 class GroupsController < ApplicationController
   
+
+  before_action :set_course, :set_activity
   before_action :set_group, only: [:show, :destroy, :update]
 
   def create
-    group = Group.new(group_params)
+    group = @activity.groups.new(group_params)
     if group.save
       render json: group, status: 201
     else
@@ -12,7 +14,7 @@ class GroupsController < ApplicationController
   end
 
   def index
-    render json: Group.all
+    render json: @activity.groups
   end
 
   def show
@@ -33,12 +35,22 @@ class GroupsController < ApplicationController
   end
 
   private
+    def set_course
+      @course = current_user.courses.where(id: params[:course_id]).first
+      return head(:not_found) if not @course
+    end
+
+    def set_activity
+      @activity = @course.activities.where(id: params[:activity_id]).first
+      return head(:not_found) if not @activity
+    end
+
     def set_group
-      @group = Group.where(id: params[:id]).first
-      return head(404) if not @group
+      @group = @activity.groups.where(id: params[:id]).first
+      return head(:not_found) if not @group
     end
 
     def group_params
-      params.permit(:name_group, :activity_id)
+      params.permit(:name_group)
     end
 end
