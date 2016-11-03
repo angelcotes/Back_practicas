@@ -3,7 +3,7 @@ class CoursesController < ApplicationController
   before_action :set_course, only: [:show, :destroy, :update]
 
   def create
-    course = current_user.course.new(course_params)
+    course = current_user.courses.new(course_params)
     if course.save
       render json: course, status: 201  
     else
@@ -39,6 +39,6 @@ class CoursesController < ApplicationController
     end
 
     def course_params
-      params.permit(:name, :period, :user_id)
+      params.permit(:name, :period, :user_id, :nrc)
     end
 end

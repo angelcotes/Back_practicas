@@ -8,6 +8,7 @@ class User < ActiveRecord::Base
 
   # Relationship
   has_many :courses
-  has_many :students
+  has_many :activities, through: :courses
+  has_many :students, through: :courses
   has_many :members
 end

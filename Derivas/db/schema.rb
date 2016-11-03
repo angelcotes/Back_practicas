@@ -30,6 +30,7 @@ ActiveRecord::Schema.define(version: 20160919054717) do
 
   create_table "courses", force: :cascade do |t|
     t.string   "name"
+    t.string   "nrc"
     t.integer  "user_id"
     t.string   "period"
     t.datetime "created_at", null: false

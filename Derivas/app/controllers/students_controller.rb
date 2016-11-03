@@ -7,13 +7,21 @@ class StudentsController < ApplicationController
   end
 
   def create
-    user = User.where(email: params[:email]).first
-    return head(422) unless user 
-    student = @course.students.new(user_id: user.id)
-    if student.save
-      render json: student, status: 201
+    error_data = Hash.new
+    p params[:data]
+    params[:data].each do |email|
+      user = User.where(email: email).first
+      if user
+        student = @course.students.new(user_id: user.id)
+        if !student.save
+          error_data.push(email)
+        end 
+      end
+    end
+    if error_data
+      render json: error_data, status: 422
     else
-      render json: student.errors, status: 422
+      render json: student, status: 201
     end
   end
 
@@ -36,7 +44,7 @@ class StudentsController < ApplicationController
   end
 
   def set_student
-    @student = @course.students.where(id: params[:user_id]).first
+    @student = @course.students.where(id: params[:id]).first
     return head(:not_found) unless @student
   end
 
