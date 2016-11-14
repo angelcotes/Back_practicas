@@ -7,9 +7,9 @@ class ActivitiesController < ApplicationController
     not_found = []
     errors_data = []
     successful_data = []
-    courses_id = params[:courses_id].split(",")
-    courses_id.each do |course_id|
-      data_course = current_user.courses.where(id: course_id).first  
+    courses_nrc = params[:nrcs].split(",")
+    courses_nrc.each do |course_nrc|
+      data_course = current_user.courses.where(nrc: course_nrc).first  
       if data_course
         params[:course_id] = data_course.id
         activity = data_course.activities.new(activity_params)
@@ -19,7 +19,7 @@ class ActivitiesController < ApplicationController
           errors_data.push(activity)
         end
       else
-        not_found.push({course_id: course_id})
+        not_found.push({course_id: course_nrc})
       end
     end
     response = {:error_data => errors_data,
@@ -30,7 +30,23 @@ class ActivitiesController < ApplicationController
   end
 
   def index
-    render json: @course.activities
+    activities = []
+    @course.activities.each do |activity|
+      activity = {
+        :id => activity.id,
+        :name_activity => activity.name_activity,
+        :range => activity.range, 
+        :latitude => activity.latitude, 
+        :longitude => activity.longitude, 
+        :start_date => activity.start_date, 
+        :finish_date => activity.finish_date, 
+        :duration => activity.duration, 
+        :course_id => activity.course_id,
+        :course_nrc => @course.nrc
+      }
+      activities.push(activity)
+    end
+    render json: activities
   end
 
   def show
@@ -38,6 +54,14 @@ class ActivitiesController < ApplicationController
   end
 
   def destroy
+    curso = Course.find(@activity[:course_id])
+    students = Student.where(course_id: curso[:id])
+    students.each do |student|
+      members = Member.where(user_id: student[:user_id])
+      members.each do |member|
+        Member.destroy(member[:id])
+      end
+    end
     @activity.destroy
     render json: @activity
   end
@@ -61,7 +85,7 @@ class ActivitiesController < ApplicationController
     end
 
     def set_course
-      @course = current_user.courses.where(id: params[:course_id]).first
+      @course = current_user.courses.where(nrc: params[:course_id]).first
       return head(:not_fount) if not @course
     end
 end

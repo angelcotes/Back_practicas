@@ -34,6 +34,10 @@ class StudentsController < ApplicationController
   end
 
   def destroy
+    members = Member.where(user_id: @student[:user_id])
+    members.each do |member|
+      Member.destroy(member[:id])
+    end
     @student.destroy
   end
 

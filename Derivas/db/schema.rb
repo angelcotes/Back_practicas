@@ -64,8 +64,13 @@ ActiveRecord::Schema.define(version: 20160919054717) do
     t.string   "rol"
     t.integer  "user_id"
     t.integer  "group_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "time_start"
+    t.integer  "duration"
+    t.string   "status",        default: "habilitado"
+    t.datetime "time_pause"
+    t.datetime "time_finished"
+    t.datetime "created_at",                           null: false
+    t.datetime "updated_at",                           null: false
   end
 
   add_index "members", ["group_id"], name: "index_members_on_group_id"

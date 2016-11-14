@@ -14,7 +14,16 @@ class GroupsController < ApplicationController
   end
 
   def index
-    render json: @activity.groups
+    groups = @activity.groups.collect { |group|
+      group = {
+        course_nrc: @course.nrc,
+        activity_id: @activity.id,
+        name_group: group.name_group,
+        users_type: User.find(@course.user_id),
+        id: group.id
+      }
+    }
+    render json: groups
   end
 
   def show
@@ -22,6 +31,10 @@ class GroupsController < ApplicationController
   end
 
   def destroy
+    members = Member.where(group_id: @group[:id])
+    members.each do |member|
+      Member.destroy(member[:id])
+    end
     @group.destroy
     render json: @group
   end
@@ -36,7 +49,7 @@ class GroupsController < ApplicationController
 
   private
     def set_course
-      @course = current_user.courses.where(id: params[:course_id]).first
+      @course = current_user.courses.where(nrc: params[:course_id]).first
       return head(:not_found) if not @course
     end
 
