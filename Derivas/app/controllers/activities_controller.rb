@@ -7,7 +7,7 @@ class ActivitiesController < ApplicationController
     not_found = []
     errors_data = []
     successful_data = []
-    courses_nrc = params[:nrcs].split(",")
+    courses_nrc = params[:nrc].split(",")
     courses_nrc.each do |course_nrc|
       data_course = current_user.courses.where(nrc: course_nrc).first  
       if data_course
@@ -81,7 +81,7 @@ class ActivitiesController < ApplicationController
     end
 
     def activity_params
-      params.permit(:name_activity, :range, :latitude, :longitude, :start_date, :finish_date, :duration, :course_id)
+      params.permit(:name_activity, :range, :latitude, :longitude, :start_date, :finish_date, :duration)
     end
 
     def set_course

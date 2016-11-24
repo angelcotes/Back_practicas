@@ -17,13 +17,18 @@ gem 'devise'
 # Cross-Origin
 gem 'rack-cors', :require => 'rack/cors'
 
+# carrierwave
+gem 'carrierwave', '>= 1.0.0.rc', '< 2.0'
+gem "fog-aws"
+
+
 # To use ActiveModel has_secure_password
 # gem 'bcrypt', '~> 3.1.7'
 
 # To use Jbuilder templates for JSON
 # gem 'jbuilder'
 
-# Use unicorn as the app server
+# Use unicorn as the app servergem install carrierwave -v "1.0.0.rc"
 # gem 'unicorn'
 
 # Deploy with Capistrano

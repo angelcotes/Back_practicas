@@ -35,7 +35,7 @@ class GroupsController < ApplicationController
     members.each do |member|
       Member.destroy(member[:id])
     end
-    @group.destroy
+    Group.destroy(@group.id)
     render json: @group
   end
 
@@ -59,7 +59,7 @@ class GroupsController < ApplicationController
     end
 
     def set_group
-      @group = @activity.groups.where(id: params[:id]).first
+      p @group = @activity.groups.where(id: params[:id]).first
       return head(:not_found) if not @group
     end
 

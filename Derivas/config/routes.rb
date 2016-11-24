@@ -3,6 +3,7 @@ Rails.application.routes.draw do
   mount_devise_token_auth_for 'User', at: 'auth'
  	post '/import', to: 'users#import'
   post "users/:user_id/members", to: 'users#enroll_member'
+  post "users/:user_id/group/:group_id/documents", to: 'users#save_document'
 
   resources :users, only: :show do
   	member do
@@ -13,6 +14,11 @@ Rails.application.routes.draw do
   	end
   end
 
+  delete "users/:document_id/document", to: 'users#deleteDocument'
+
+
+
+  get "users/:group_id/members", to: 'users#membersGroup'
   get "users/:user_id/groupStudent/:activity_id", to: 'users#groupStudent'
   get "/users/:user_id/courses/:course_id/students", to: 'users#student_courses'
   get "users/:user_id/courses", to: 'users#users_courses'
