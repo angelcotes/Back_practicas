@@ -16,8 +16,6 @@ Rails.application.routes.draw do
 
   delete "users/:document_id/document", to: 'users#deleteDocument'
 
-
-
   get "users/:group_id/members", to: 'users#membersGroup'
   get "users/:user_id/groupStudent/:activity_id", to: 'users#groupStudent'
   get "/users/:user_id/courses/:course_id/students", to: 'users#student_courses'
@@ -26,12 +24,15 @@ Rails.application.routes.draw do
   get "users/:user_id/AllactivitiesStudent", to: 'users#users_all_activities'
   get "users/:user_id/AllGroups", to: 'users#users_all_groups'
   get "users/:user_id/course/:course_id/group/:group_id/members", to: 'users#members_group'
-  
-  resources :courses, except: [:new, :edit] do 
+
+  resources :courses, except: [:new, :edit] do
     resources :students, except: [:new, :edit, :show]
 
     resources :activities, except: [:new, :edit] do
       resources :groups, except: [:new, :edit]
     end
   end
+
+  # Path to uploads files
+  get 'storage/uploads/document/address/:id/:basename.:extension', to: 'documents#download'
 end

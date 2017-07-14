@@ -1,10 +1,10 @@
 CarrierWave.configure do |config|
-  config.fog_provider = 'fog/aws'                        
-  config.fog_credentials = {
-    provider:              'AWS',                        
-    aws_access_key_id:     'AKIAIJQRYR4B4U74B2CQ',
-    aws_secret_access_key: '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',
-    region:                'sa-east-1'
-  }
-  config.fog_directory  = 'urbanas'
+  # These permissions will make dir and files available only to the user running
+  # the servers
+  config.permissions = 0600
+  config.directory_permissions = 0700
+  config.storage = :file
+  # This avoids uploaded files from saving to public/ and so
+  # they will not be available for public (non-authenticated) downloading
+  config.root = Rails.root
 end
