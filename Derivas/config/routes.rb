@@ -1,5 +1,7 @@
 Rails.application.routes.draw do
 
+  get 'password/update'
+
   mount_devise_token_auth_for 'User', at: 'auth'
  	post '/import', to: 'users#import'
   post "users/:user_id/members", to: 'users#enroll_member'
@@ -26,8 +28,11 @@ Rails.application.routes.draw do
   get "users/:user_id/AllactivitiesStudent", to: 'users#users_all_activities'
   get "users/:user_id/AllGroups", to: 'users#users_all_groups'
   get "users/:user_id/course/:course_id/group/:group_id/members", to: 'users#members_group'
-  
-  resources :courses, except: [:new, :edit] do 
+
+  # Restore password
+  put 'password', to: 'password#update'
+
+  resources :courses, except: [:new, :edit] do
     resources :students, except: [:new, :edit, :show]
 
     resources :activities, except: [:new, :edit] do
