@@ -1,7 +1,5 @@
 Rails.application.routes.draw do
 
-  get 'password/update'
-
   mount_devise_token_auth_for 'User', at: 'auth'
  	post '/import', to: 'users#import'
   post "users/:user_id/members", to: 'users#enroll_member'
