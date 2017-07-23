@@ -362,21 +362,55 @@ class UsersController < ApplicationController
     def import
         error_data = []
         successful_data = []
-        content = params.values[0]
-        data_users = content.split("\r\n\r\n﻿")
-        data_users[1].split("\n")[1..-3].each do |data|
-            atributos = data.split(",")
-            information = {:last_name => atributos[0].gsub(/["\\]/, '').to_s,
-                        :first_name => atributos[1].gsub(/["\\]/, '').to_s,
+        password = []
+        content = params[:upload]
+        course_id = params[:course_id]
+        if content[:name]
+            pass = content[:code] + content[:username]
+            finalPass = (pass.split("").shuffle.join)
+            information = {:last_name => content[:lastNames],
+                        :first_name => content[:name],
                         :users_type => 'Student',
-                        :password => atributos[3].gsub(/["\\]/, '').to_s,
-                        :email => atributos[2].gsub(/["\\]/, '').to_s + '@uninorte.edu.co'}
+                        :email => content[:username] + '@uninorte.edu.co',
+                        :password => finalPass}
             user = User.new(information)
             if user.save or User.find_by(email: information[:email])
-                successful_data.push(information[:email])
+                student = Student.new({:course_id => course_id, :user_id => user.id})
+                if student.save
+                    password.push(finalPass)
+                    successful_data.push(information[:email])
+                end
             else
                 error_data.push(information[:email])
             end
+        else
+            content = content.gsub!(/([\"])/, '')
+            content = content.split("\r\n");
+            content.each do |data|
+                atributos = data.split(",")
+                if atributos[0] != "Apellidos"
+                    pass = atributos[3] + atributos[2]
+                    finalPass = (pass.split("").shuffle.join)
+                    information = {:last_name => atributos[0],
+                                :first_name => atributos[1],
+                                :users_type => 'Student',
+                                :email => atributos[2] + '@uninorte.edu.co',
+                                :password => finalPass}
+                    user = User.new(information)
+                    if user.save or User.find_by(email: information[:email])
+                        student = Student.new({:course_id => course_id, :user_id => user.id})
+                        if student.save
+                            password.push(finalPass)
+                            successful_data.push(information[:email])
+                        end
+                    else
+                        error_data.push(information[:email])
+                    end
+                end
+            end
+        end
+        successful_data.each.with_index do |email, index|
+            SendMailStudents.send_simple_message(email, password[index]).deliver_now
         end
         response = {:error_data => error_data,
                     :successful_data => successful_data}
@@ -384,9 +418,16 @@ class UsersController < ApplicationController
     end
 
     def student_courses
+        #repitiendo datos de estudiantes
         user = User.find(params[:user_id])
-        course = user.courses.find(params[:course_id])
-        students = course.students.collect{|student| {id: student.id, email: student.user.email, first_name: student.user.first_name, last_name: student.user.last_name, course: student.course}}
+        if user.users_type != "Student"
+            course = user.courses.find(params[:course_id])
+            students = course.students.collect{|student| {id: student.id, email: student.user.email, first_name: student.user.first_name, last_name: student.user.last_name, course: student.course}}
+        else
+            course = Course.find(params[:course_id])
+            students = course.students.collect{|student| {id: student.id, email: student.user.email, first_name: student.user.first_name, last_name: student.user.last_name, course: student.course}}
+        end
+        
         if students
           render json: students, status: 201  
         else
