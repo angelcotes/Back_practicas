@@ -42,14 +42,17 @@ Rails.application.configure do
   Rails.application.routes.default_url_options[:host] = 'derivasurbanas.edu.co'
   config.action_mailer.delivery_method = :smtp
 
+  Rails.application.routes.default_url_options[:host] = 'derivasurbanas.edu.co'
+  config.action_mailer.delivery_method = :smtp
+
   config.action_mailer.smtp_settings = {
     address: 'smtp-relay.sendinblue.com',
     port: '587',
     domain: 'sendinblue.com',
     authentication: 'plain',
     enable_starttls_auto: true,
-    user_name: 'albertomc@uninorte.edu.co',
-    password: '9J7d5gPVmzEXZBFO'
+    user_name: 'adcotes@uninorte.edu.co',
+    password: 'cLY5b9G3w8FdvqEa'
   }
 
 end
