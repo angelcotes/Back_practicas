@@ -14,12 +14,12 @@ class UsersController < ApplicationController
         data_final = {
             type_document:  params[:file].original_filename,
             address: params[:file],
-            member_id: member.user_id, 
+            member_id: member.user_id,
             group_id: member.group_id
         }
         document = Document.new(data_final)
         if document.save
-          render json: document, status: 201  
+          render json: document, status: 201
         else
           render json: document.errors, status: 422
         end
@@ -35,18 +35,18 @@ class UsersController < ApplicationController
                 :users_type => user.users_type,
                 :course_nrc => course.nrc,
                 :id => activity[:id],
-                :name_activity => activity[:name_activity], 
-                :range => activity[:range], 
-                :latitude => activity[:latitude], 
-                :longitude => activity[:longitude], 
-                :start_date => activity[:start_date], 
+                :name_activity => activity[:name_activity],
+                :range => activity[:range],
+                :latitude => activity[:latitude],
+                :longitude => activity[:longitude],
+                :start_date => activity[:start_date],
                 :finish_date => activity[:finish_date],
                 :duration => activity[:duration]
             }
             myActivities.push(activity)
         end
         if myActivities.any?
-            render json: myActivities, status: 200 
+            render json: myActivities, status: 200
         end
     end
 
@@ -61,28 +61,28 @@ class UsersController < ApplicationController
             if activity.start_date <= fecha and activity.finish_date >= fecha
                 if times <= activity.finish_date
                     @data = {
-                        status: "finalizado", 
+                        status: "finalizado",
                         time_start: fecha,
                         time_finished: times
                     }
                 else
                     @data = {
-                        status: "finalizado", 
+                        status: "finalizado",
                         time_start: fecha,
                         time_finished: activity.finish_date
-                    } 
-                    times = activity.finish_date               
+                    }
+                    times = activity.finish_date
                 end
                 p @data
                 if member.update(@data)
                     render json: {:sms => 'Actividad iniciada', :finish => times}, status: 200
                 else
                     render json: {:sms => 'No se pudo iniciar la actividad'}, status: 422
-                end 
+                end
             else
                 if fecha < activity.start_date
                     render  json: {:sms => 'La actividad no ha iniciado'}, status: 422
-                elsif fecha > activity.finish_date                    
+                elsif fecha > activity.finish_date
                     render  json: {:sms => 'La actividad ha finzalizado'}, status: 422
                 else
                     render json: {:finish => @data.time_finished}, status: 200
@@ -119,11 +119,11 @@ class UsersController < ApplicationController
             data_activity = {:users_type => "Student",
                             :course_nrc => course.nrc,
                             :id => data_activity[:id],
-                            :name_activity => data_activity[:name_activity], 
-                            :range => data_activity[:range], 
-                            :latitude => data_activity[:latitude], 
-                            :longitude => data_activity[:longitude], 
-                            :start_date => data_activity[:start_date], 
+                            :name_activity => data_activity[:name_activity],
+                            :range => data_activity[:range],
+                            :latitude => data_activity[:latitude],
+                            :longitude => data_activity[:longitude],
+                            :start_date => data_activity[:start_date],
                             :finish_date => data_activity[:finish_date],
                             :duration => data_activity[:duration]}
             activities.push(data_activity)
@@ -139,15 +139,15 @@ class UsersController < ApplicationController
         studentCourses.each do |student_item|
             studentActivities_course  = student_item.activities
             studentActivities_course  = studentActivities_course.collect{|data_activity|
-                course = Course.find(data_activity.course_id) 
+                course = Course.find(data_activity.course_id)
                 {:users_type => "Student",
                 :course_nrc => course.nrc,
                 :id => data_activity.id,
-                :name_activity => data_activity.name_activity, 
-                :range => data_activity.range, 
-                :latitude => data_activity.latitude, 
-                :longitude => data_activity.longitude, 
-                :start_date => data_activity.start_date, 
+                :name_activity => data_activity.name_activity,
+                :range => data_activity.range,
+                :latitude => data_activity.latitude,
+                :longitude => data_activity.longitude,
+                :start_date => data_activity.start_date,
                 :finish_date => data_activity.finish_date,
                 :duration => data_activity.duration}
             }
@@ -181,7 +181,7 @@ class UsersController < ApplicationController
             }
             if documents
                 documents.each do |document|
-                    documents_group.push({first_name: user.first_name, url: document.address, id: user.id, name: document.type_document})
+                    documents_group.push({first_name: user.first_name, url: request.base_url + document.file_path, id: user.id, name: document.type_document})
                 end
             end
             data_members << final_data
@@ -220,8 +220,8 @@ class UsersController < ApplicationController
         user = User.find(params[:user_id])
         members = Member.where(user_id: user.id)
         groups = Group.where(activity_id: params[:activity_id])
-        groups.each do |data_group|  
-            members.each do |data_member|  
+        groups.each do |data_group|
+            members.each do |data_member|
                 if data_member.group_id == data_group.id
                     group << {
                         id: data_group.id,
@@ -265,7 +265,7 @@ class UsersController < ApplicationController
         user = User.find(params[:id])
         students = user.students.collect{|student| {id: student.id, email: student.user.email, first_name: student.user.first_name, last_name: student.user.last_name, course: student.course}}
         if students
-          render json: students, status: 201  
+          render json: students, status: 201
         else
           render json: students.errors, status: 422
         end
@@ -301,7 +301,7 @@ class UsersController < ApplicationController
                 }
                 students_without_group.push(userStudent)
             end
-        end 
+        end
         if user.users_type == 'Teacher'
             response = {:student_course => students_without_group, :members_group => group_members}
             render json: response, status: 200
@@ -331,19 +331,19 @@ class UsersController < ApplicationController
                     if !Member.where({user_id: user_mem[:user_id], group_id: user_mem[:group_id]}).first.nil?
                         memberF = Member.where({user_id: user_mem[:user_id], group_id: user_mem[:group_id]}).first
                         Member.destroy(memberF.id)
-                        member = Member.new({group_id: user_mem[:group_id], user_id: user_mem[:user_id], rol: user_mem[:rol]}) 
+                        member = Member.new({group_id: user_mem[:group_id], user_id: user_mem[:user_id], rol: user_mem[:rol]})
                         if member.save
                             successful_data.push(member)
                         else
-                            error_data.push(member)     
+                            error_data.push(member)
                         end
                     else
-                        member = Member.new({group_id: user_mem[:group_id], user_id: user_mem[:user_id], rol: user_mem[:rol]}) 
+                        member = Member.new({group_id: user_mem[:group_id], user_id: user_mem[:user_id], rol: user_mem[:rol]})
                         if member.save
                             successful_data.push(user_mem)
                         else
-                            error_data.push(user_mem)     
-                        end 
+                            error_data.push(user_mem)
+                        end
                     end
                 end
             end
@@ -353,10 +353,10 @@ class UsersController < ApplicationController
             else
                 response = {:error => error_data, :success => successful_data}
                 render json: response, status: 422
-            end 
+            end
         else
             render json: 'Usuario no autorizado', status: 422
-        end       
+        end
     end
 
     def import
@@ -429,7 +429,7 @@ class UsersController < ApplicationController
         end
         
         if students
-          render json: students, status: 201  
+          render json: students, status: 201
         else
           render json: students.errors, status: 422
         end
